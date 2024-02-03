@@ -1,141 +1,125 @@
 # Vigenere Cipher Python Project
 
 ## Description
-A Python program that gives the user the option to encrypt or decrypt a message, or quit the program entirely.
+A Python program that gives the user the option to encrypt or decrypt a message, or quit the program entirely. This program utilizes the vigenere cipher.
 ## Code Snippet
 
 ```
-import time
-import sys
+# __     ___                                   ____ _       _               
+# \ \   / (_) __ _  ___ _ __   ___ _ __ ___   / ___(_)_ __ | |__   ___ _ __ 
+#  \ \ / /| |/ _` |/ _ \ '_ \ / _ \ '__/ _ \ | |   | | '_ \| '_ \ / _ \ '__|
+#   \ V / | | (_| |  __/ | | |  __/ | |  __/ | |___| | |_) | | | |  __/ |   
+#    \_/  |_|\__, |\___|_| |_|\___|_|  \___|  \____|_| .__/|_| |_|\___|_|   
+#            |___/                                   |_|                    
 
-print("Jake's Caesar Cipher - Version 1.2")
+#region Import any functions I need here.
+import time
+#endregion
+
+#region Introduce the user to the program with a friendly message.
+print("Jake's Vigenere Cipher")
+time.sleep(1)
+print("Version 2.4")
 time.sleep(1)
 
-def get_letters_only_input():
-    while True:
-        letter_input = input("Please enter the message to encrypt or decrypt. \n")
-        if all(char.isalpha() or char.isspace() for char in letter_input):
-            if letters_only_confirmation(letter_input):
-                time.sleep(1)
-                print("Thank you. Moving Ahead.")
-                return letter_input
-            else:
-                time.sleep(1)
-                print("Understood. Cancelling Operation. Please enter the plaintext again.")
+#endregion
+
+#region Ask the user for their input string and key for the cipher. We will define these functions to be used later in the program.
+def clear_or_encrypted_input():
+    while True: #Using a boolean value allows us to verify the integrity of the input text.
+        lettter_input = str(input("Please insert the message to be Encrypted or Decrypted. Only letters and spaces are allowed.\n"))
+        if all(char.isalpha() or char.isspace() for char in lettter_input):
+            time.sleep(1)
+            print ("Thank you. Moving Ahead.")
+            return lettter_input
         else:
-            time.sleep(1)
-            print("Invalid Input! You must only use letters. \n")
+            print ("Invalid input! Please input only letters please.")
 
-def letters_only_confirmation(user_input):
-    while True:
-        time.sleep(1)
-        user_answer = input(f"Is '{user_input}' what you wanted to use? [Y/N]\n").lower()
-        if user_answer == "y":
-            return True
-        elif user_answer == "n":
-            return False
+def key_input():
+    while True: #Using a boolean value allows us to verify the integrity of the input text.
+        key_int = str(input("Please input an encryption/decryption key for the cipher. It can be a word or any combination of letters.\n"))
+        if all(char.isalpha() for char in key_int):
+            time.sleep(1)
+            print("Thank you. Moving Ahead.")
+            return key_int
         else:
-            time.sleep(1)
-            print("Invalid Input! Select [Y/N]")
+            print ("Invalid input! Please input only letters or words.")
+#endregion
 
-def get_shift_integer_input():
-    while True:
-        time.sleep(1)
-        try:
-            shift_answer = int(input("Please select a number of characters to shift. Your answer can be between 1 and 25.\n"))
-            if 1 <= shift_answer <= 25:
-                if shift_integer_confirmation(shift_answer):
-                    time.sleep(1)
-                    print("Thank you. Time to Encrypt/Decrypt. Loading...")
-                    return shift_answer
-                else:
-                    time.sleep(1)
-                    print("Understood. Please select an integer between 1 and 25.\n")
-            else:
-                time.sleep(1)
-                print("Invalid Choice! Please select an integer between 1 and 25.\n")
-        except ValueError:
-            time.sleep(1)
-            print("Invalid Input! Please select an integer between 1 and 25.\n")
-
-def shift_integer_confirmation(shift_input):
-    while True:
-        time.sleep(1)
-        shift_input_confirm = input(f"Is '{shift_input}' the number of times you want to shift? [Y/N]\n").lower()
-        if shift_input_confirm == "y":
-            return True
-        elif shift_input_confirm == "n":
-            return False
-        else:
-            time.sleep(1)
-            print("Invalid Input! Select [Y/N].")
-
-def encrypt(text, shift):
-    result = ""
+#region This will contain the encryption algorithm.
+def encrypt(text, key):
+    encrypt_text = ""
+    key_length = len(key)
+    key_space = 0
     for char in text:
         if char.isalpha():
-            if char.isupper():
-                result += chr((ord(char) + shift - ord('A')) % 26 + ord('A'))
+            key_char = key[key_space % key_length]
+            shift = ord(key_char.upper()) - ord('A')
+            if char.islower():
+                encrypt_char = chr((ord(char) - ord('a') + shift) % 26 + ord('a'))
             else:
-                result += chr((ord(char) + shift - ord('a')) % 26 + ord('a'))
+                encrypt_char = chr((ord(char) - ord('A') + shift) % 26 + ord('A'))
+            key_space += 1
         else:
-            result += char
-    return result
+            encrypt_char = char
 
-def decrypt(text, shift):
-    result = ""
+        encrypt_text += encrypt_char
+    return encrypt_text
+#endregion
+
+#region This will contain the decryption algorith.
+def decrypt(text, key):
+    decrypt_text = ""
+    key_length = len(key)
+    key_space = 0
+
     for char in text:
         if char.isalpha():
-            if char.isupper():
-                result += chr((ord(char) + shift - ord('A')) % 26 + ord('A'))
+            key_char = key[key_space % key_length]
+            shift = ord(key_char.upper()) - ord('A')
+            if char.islower():
+                decrypt_char = chr((ord(char) - ord('a') - shift + 26) % 26 + ord('a'))
             else:
-                result += chr((ord(char) + shift - ord('a')) % 26 + ord('a'))
+                decrypt_char = chr((ord(char) - ord('A') - shift + 26) % 26 + ord('A'))
+            key_space += 1
         else:
-            result += char
-    return result
+            decrypt_char = char
 
-def loading_bar(duration):
-    for _ in range(10):
-        print("[{}{}]".format("=" * _, " " * (9 - _)), end="\r")
-        time.sleep(duration / 10)
+        decrypt_text += decrypt_char
 
-def encrypt_or_decrypt():
+    return decrypt_text
+
+
+
+#endregion
+
+#region Ask the user if they want to encrypt, decrypt, or quit the program. This will be last because I need to define the information gathering and encrytion/decryption functions first.
+def choiceMatch():
     while True:
-        time.sleep(1)
-        option = input("Would you like to [E]ncrypt a message, [D]ecrypt a message, or [Q]uit? [E/D/Q]\n").lower()
-        if option == "q":
-            time.sleep(1)
-            print("Quitting...")
-            loading_bar(3)
-            sys.exit()
-        if option == "e":
-            return "encrypt"
-        elif option == "d":
-            return "decrypt"
-        else:
-            time.sleep(1)
-            print("Invalid Input! Select [E/D]\n")
+        choice = str(input("Would you like to [E]ncrypt a message, [D]ecrypt a message, or [Q]uit the program? [E/D/N]\n"))
+        match choice:
+            case "Q":
+                print("You chose to Quit the program.")
+                time.sleep(1)
+                print("Goodbye!")
+                break
+            case "E":
+                time.sleep(1)
+                print("You chose to Encrypt a message.")
+                plaintextstring = clear_or_encrypted_input()
+                key = key_input()
+                time.sleep(1)
+                print (f"Your encrypted message is: {encrypt(plaintextstring, key)}")
+            case "D":
+                time.sleep(1)
+                print("You chose to decrypt a message.")
+                encryptedtextstring = clear_or_encrypted_input()
+                key = key_input()
+                time.sleep(1)
+                print (f"Your decrypted message is: {decrypt(encryptedtextstring, key)}")
+            case _:
+                print("Invalid Selection! Please select [E/D/Q].")
 
-while True:
-    option = encrypt_or_decrypt()
-
-    if option == "encrypt":
-        plaintext_string = get_letters_only_input()
-        shift_value = get_shift_integer_input()
-        encrypted_text = encrypt(plaintext_string, shift_value)
-
-        loading_duration = 5
-        loading_bar(loading_duration)
-        time.sleep(1)
-        print(f"Here is your encrypted message: \n{encrypted_text}")
-       
-    elif option == "decrypt":
-        plaintext_string = get_letters_only_input()
-        shift_value = get_shift_integer_input()
-        decrypted_text = decrypt(plaintext_string, -shift_value)
-
-        loading_duration = 5
-        loading_bar(loading_duration)
-        time.sleep(1)
-        print(f"Here is your decrypted message: \n{decrypted_text}")
+choiceMatch()
+#endregion
 ```
