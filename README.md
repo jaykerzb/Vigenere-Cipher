@@ -4,7 +4,7 @@
 A Python program that gives the user the option to encrypt or decrypt a message, or quit the program entirely. This program utilizes the vigenere cipher.
 ## Code Snippet
 
-```
+```python
 # __     ___                                   ____ _       _               
 # \ \   / (_) __ _  ___ _ __   ___ _ __ ___   / ___(_)_ __ | |__   ___ _ __ 
 #  \ \ / /| |/ _` |/ _ \ '_ \ / _ \ '__/ _ \ | |   | | '_ \| '_ \ / _ \ '__|
